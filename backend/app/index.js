@@ -15,7 +15,7 @@ app.locals.engine = engine;
 // Same Origin Policy. Allows localhost:5100 (frontend) so submit api requests
 app.use(cors({ origin: 'http://localhost:5100' }));
 
-app.user(bodyParser.json());
+app.use(bodyParser.json());
 
 // url routing
 app.use('/account', accountRouter)
