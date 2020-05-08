@@ -1,0 +1,5 @@
+backend/secrets/
+backend/node_modules/
+node_modules/
+.cache/
+frontend/node_modules/

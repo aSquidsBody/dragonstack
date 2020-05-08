@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const GenerationEngine = require('./generation/engine.js');
 const dragonRouter = require('./api/dragon.js');
 const generationRouter = require('./api/generation.js')
@@ -13,12 +14,19 @@ const engine = new GenerationEngine();
 app.locals.engine = engine;  
 
 // Same Origin Policy. Allows localhost:5100 (frontend) so submit api requests
-app.use(cors({ origin: 'http://localhost:5100' }));
+// when the frontend we trust asks for it, we want them to be able to send cookies, so credentials: true
+app.use(cors({ origin: 'http://localhost:5100', credentials: true }));
 
+// populates the body property of the request object (req.body)
 app.use(bodyParser.json());
 
+// gives a middleware function to allow us to work with cookies
+// that are in request object that the backend recieves from the client
+// populates the cookie property of the request object (req.cookie)
+app.use(cookieParser());
+
 // url routing
-app.use('/account', accountRouter)
+app.use('/account', accountRouter);
 app.use('/dragon', dragonRouter);  
 app.use('/generation', generationRouter);
 

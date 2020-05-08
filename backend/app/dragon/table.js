@@ -4,14 +4,14 @@ const DragonTraitTable = require('../dragonTrait/table.js');
 class DragonTable{
     static storeDragon(dragon) {
         // generationId is defined since the generation has been databased, but dragonId (dragon.id in the db) is not defined yet
-        const { birthdate, nickname, generationId } = dragon;  
+        const { birthdate, nickname, generationId, isPublic, saleValue, sireValue } = dragon;  
 
         // promise allows data in response to be passed back to the code where the storeDragon method is called
         return new Promise((resolve, reject) => {
             pool.query(
-                `INSERT INTO dragon(birthdate, nickname, "generationId") 
-                 VALUES($1, $2, $3) RETURNING id`,
-                [birthdate, nickname, generationId],
+                `INSERT INTO dragon(birthdate, nickname, "generationId", "isPublic", "saleValue", "sireValue") 
+                 VALUES($1, $2, $3, $4, $5, $6) RETURNING id`,
+                [birthdate, nickname, generationId, isPublic, saleValue, sireValue],
                 (error, response) => {
                     if (error) return reject(error);
                     
@@ -32,20 +32,43 @@ class DragonTable{
     }
 
     static getDragon({ dragonId }){
-        return new Promise((resolve, reject) =>
-        pool.query(
-            `SELECT birthdate, nickname, "generationId" 
-             FROM dragon 
-             WHERE dragon.id = $1`,
-            [dragonId],
-            (error, response) => {
-                if (error) return reject(error);
+        return new Promise((resolve, reject) => {
+            pool.query(
+                `SELECT birthdate, nickname, "generationId", "isPublic", "saleValue", "sireValue"
+                FROM dragon 
+                WHERE dragon.id = $1`,
+                [dragonId],
+                (error, response) => {
+                    if (error) return reject(error);
 
-                if (response.rows.length === 0) return reject(new Error("no dragon"));
+                    if (response.rows.length === 0) return reject(new Error("no dragon"));
 
-                resolve(response.rows[0]);
+                    resolve(response.rows[0]);
+                }
+            )
+        });
+    }
+
+    static updateDragon({ dragonId, nickname, isPublic, saleValue, sireValue }) {
+        const settingsMap = { nickname, isPublic, saleValue, sireValue };
+        // [['nickname', nickname], ['isPublic', isPublic], ...]
+        const validQueries = Object.entries(settingsMap).filter(([settingKey, settingValue]) => {      
+            if (settingValue !== undefined) {
+                return new Promise((resolve, reject) => {
+                    pool.query(
+                        `UPDATE dragon SET "${settingKey}" = $1 WHERE id = $2`,
+                        [settingValue, dragonId],
+                        (error, response) => {
+                            if (error) return reject(error);
+
+                            resolve();
+                        }
+                    )
+                });
             }
-        ))
+        });
+
+        return Promise.all(validQueries);
     }
 }
 

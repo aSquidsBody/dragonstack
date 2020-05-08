@@ -12,6 +12,8 @@ C:\\PostgreSQL\\12\\bin\\psql.exe -U node_user dragonstackdb < ./bin/sql/generat
 C:\\PostgreSQL\\12\\bin\\psql.exe -U node_user dragonstackdb < ./bin/sql/dragon.sql
 C:\\PostgreSQL\\12\\bin\\psql.exe -U node_user dragonstackdb < ./bin/sql/trait.sql
 C:\\PostgreSQL\\12\\bin\\psql.exe -U node_user dragonstackdb < ./bin/sql/dragonTrait.sql
+C:\\PostgreSQL\\12\\bin\\psql.exe -U node_user dragonstackdb < ./bin/sql/accountDragon.sql
+
 
 node ./bin/insertTraits.js
 
